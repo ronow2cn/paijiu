@@ -6,6 +6,7 @@ import (
 	"comm/dbmgr"
 	"comm/sched/asyncop"
 	"comm/sched/loop"
+	"game/app/comp/plrtable"
 	"game/app/sched/resetter"
 	"game/msg"
 	"math/rand"
@@ -34,7 +35,9 @@ func newPlayer(u *User) *Player {
 }
 
 func (self *Player) open() {
-	//user := self.user
+	user := self.user
+
+	user.PlrTable.Init(self)
 
 }
 
@@ -232,4 +235,10 @@ func (self *Player) ResetSetTime(ts time.Time) {
 
 func (self *Player) ResetDaily() {
 
+}
+
+// ============================================================================
+//牌桌数据
+func (self *Player) GetPlrTable() *plrtable.PlrTable {
+	return self.user.PlrTable
 }

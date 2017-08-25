@@ -14,7 +14,11 @@ const (
 	Login_UserInfo       = 5
 
 	// --------------------------------
-	// 背包 [100, 200)
+	// 牌桌 [100, 200)
 	// --------------------------------
 
+	Table_Full      = 100
+	Table_IsBanker  = 101
+	Table_ErrorPos  = 102
+	Table_PosOccupy = 103
 )

@@ -4,6 +4,7 @@ import (
 	"comm"
 	"comm/db"
 	"comm/dbmgr"
+	"game/app/comp/plrtable"
 	"time"
 )
 
@@ -18,11 +19,12 @@ type User struct {
 	CreateTs   time.Time `bson:"create_ts"`   // 创建时间
 	LoginTs    time.Time `bson:"login_ts"`    // 上次登陆时间
 	LoginIP    string    `bson:"login_ip"`    // 上次登录 IP
-
-	RstTs time.Time `bson:"rst_ts"` // 上次重置时间
+	RstTs      time.Time `bson:"rst_ts"`      // 上次重置时间
 
 	Lv  int32 `bson:"lv"`  // 等级
 	Exp int32 `bson:"exp"` // 经验
+
+	PlrTable *plrtable.PlrTable `bson:"table"` //玩家牌桌信息
 
 	db *db.Database `bson:"-"`
 }
@@ -50,6 +52,8 @@ func createUser(uid string, f func(*User)) *User {
 
 	user.Lv = 1
 	user.Exp = 0
+
+	user.PlrTable = plrtable.NewPlrTable()
 
 	// --------------------------------
 
