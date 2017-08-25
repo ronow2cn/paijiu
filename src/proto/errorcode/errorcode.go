@@ -24,4 +24,5 @@ const (
 	Table_NotExist    = 104
 	Table_IsNotBanker = 105
 	Table_NotInTable  = 106
+	Table_IdIsOver    = 107
 )

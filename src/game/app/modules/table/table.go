@@ -22,6 +22,8 @@ const (
 // ============================================================================
 
 type playerinfo struct {
+	Name  string
+	Head  string
 	Pos   int32 //位置
 	Score int32 //当前拥有筹码
 }
@@ -139,9 +141,25 @@ func (self *Table) Enter(plrid string) int {
 
 	_, ok := self.Plrs[plrid]
 	if !ok {
+		plr := app.PlayerMgr.LoadPlayer(plrid)
+		if plr == nil {
+			log.Error("player not found")
+			return Err.Failed
+		}
+
+		if plr.GetPlrTable().GetTableId() == self.Id {
+			if !plr.GetPlrTable().GetTCreateTime().Equal(self.CreatetTs) {
+				return Err.Table_IdIsOver
+			}
+		}
+
+		plr.GetPlrTable().Set(self.Id, self.CreatetTs)
+
 		self.Plrs[plrid] = &playerinfo{
 			Pos:   gconst.TablePosPlayerWatch,
 			Score: 0,
+			Name:  plr.GetName(),
+			Head:  plr.GetHead(),
 		}
 	}
 
