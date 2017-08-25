@@ -160,6 +160,10 @@ func (self *Table) Leave(plrid string) int {
 
 	self.Plrs[plrid].Pos = gconst.TablePosPlayerWatch
 
+	if self.Plrs[plrid].Score == 0 {
+		delete(self.Plrs, plrid)
+	}
+
 	return Err.OK
 }
 
