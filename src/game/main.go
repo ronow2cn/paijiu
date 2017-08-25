@@ -8,6 +8,7 @@ import (
 	"comm/sched/loop"
 	"flag"
 	"game/app"
+	"game/app/modules/room"
 	"game/handler"
 	"game/perfmon"
 	"math/rand"
@@ -53,6 +54,8 @@ func start() {
 	app.NetMgr.Start()
 	// run app loop
 	loop.Run()
+	//room init
+	room.Init()
 	// app started
 	log.Notice("game started")
 	// perfmon

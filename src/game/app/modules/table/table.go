@@ -1,12 +1,20 @@
 package table
 
 import (
+	"game/app"
 	"game/app/gconst"
+	"game/msg"
+	"gopkg.in/mgo.v2/bson"
+	"math/rand"
 	"proto/errorcode"
 	"time"
 )
 
 // ============================================================================
+var (
+	RANDTABLEDICE = rand.New(rand.NewSource(time.Now().Unix()))
+)
+
 const (
 	TableMaxPlayer = 16
 )
@@ -18,11 +26,11 @@ type playerinfo struct {
 	Score int32 //当前拥有筹码
 }
 
+type chips map[int32]*Chip //[位置]位置上筹码
+
 type Chip struct {
 	Bets map[string]int32 `bson:"num"` //[玩家]玩家下注数量
 }
-
-type chips map[int32]*Chip //[位置]位置上筹码
 
 type Play struct {
 	Chips chips `bson:"chips"` //下注情况
@@ -33,6 +41,7 @@ type Table struct {
 	Plrs      map[string]*playerinfo `bson:"plrs"`
 	Banker    string                 `bson:"banker"`
 	PlayIdx   int32                  `bson:"play_idx"`
+	DiceNum   int32                  `bson:"dice_num"`
 	CurPlay   *Play                  `bson:"cur_play"`
 	CreatetTs time.Time              `bson:"create_ts"`
 }
@@ -95,6 +104,34 @@ func (self *Table) Init(id int32, plrid string, score int32) {
 	}
 }
 
+// ============================================================================
+
+func (self *Table) checkPos(pos int32) bool {
+	return pos == gconst.TablePosBanker || pos == gconst.TablePosPlayer1 || pos == gconst.TablePosPlayer2 ||
+		pos == gconst.TablePosPlayer3 || pos == gconst.TablePosPlayerWatch
+
+}
+
+func (self *Table) FindPosPlrId(pos int32) (string, int) {
+	if !self.checkPos(pos) {
+		return "", Err.Table_ErrorPos
+	}
+
+	for id, v := range self.Plrs {
+		if v.Pos == pos {
+			return id, Err.OK
+		}
+	}
+
+	return "", Err.OK
+}
+
+func (self *Table) IsBanker(plrid string) bool {
+	return plrid == self.Banker
+}
+
+// ============================================================================
+
 func (self *Table) Enter(plrid string) int {
 	if len(self.Plrs) >= TableMaxPlayer {
 		return Err.Table_Full
@@ -111,13 +148,19 @@ func (self *Table) Enter(plrid string) int {
 	return Err.OK
 }
 
-func (self *Table) Leave(plrid string) {
+func (self *Table) Leave(plrid string) int {
 	_, ok := self.Plrs[plrid]
 	if ok {
-		if self.Plrs[plrid].Pos != gconst.TablePosBanker {
-			self.Plrs[plrid].Pos = gconst.TablePosPlayerWatch
-		}
+		return Err.Table_NotInTable
 	}
+
+	if self.IsBanker(plrid) {
+		return Err.Table_IsBanker
+	}
+
+	self.Plrs[plrid].Pos = gconst.TablePosPlayerWatch
+
+	return Err.OK
 }
 
 func (self *Table) StandUp(plrid string) int {
@@ -155,22 +198,17 @@ func (self *Table) SeatDown(plrid string, pos int32) int {
 	return Err.OK
 }
 
-func (self *Table) CheckPos(pos int32) bool {
-	return pos == gconst.TablePosBanker || pos == gconst.TablePosPlayer1 || pos == gconst.TablePosPlayer2 ||
-		pos == gconst.TablePosPlayer3 || pos == gconst.TablePosPlayerWatch
-
+func (self *Table) Dice() int32 {
+	return RANDTABLEDICE.Int31n(6) + RANDTABLEDICE.Int31n(6) + 2
 }
 
-func (self *Table) FindPosPlrId(pos int32) (string, int) {
-	if !self.CheckPos(pos) {
-		return "", Err.Table_ErrorPos
-	}
-
-	for id, v := range self.Plrs {
-		if v.Pos == pos {
-			return id, Err.OK
+func (self *Table) BroadcastMsg(message msg.Message) {
+	for id, _ := range self.Plrs {
+		plr := app.PlayerMgr.LoadPlayer(id)
+		if plr == nil {
+			continue
 		}
-	}
 
-	return "", Err.OK
+		plr.SendMsg(message)
+	}
 }
