@@ -49,6 +49,17 @@ func (self *room) genTableId() int32 {
 	return 0
 }
 
+func (self *room) GetTableById(id int32) *table.Table {
+	table, ok := self.Table[id]
+	if !ok {
+		return nil
+	}
+
+	return table
+}
+
+// ============================================================================
+
 //开桌人的id，开房总分
 func (self *room) CreateTable(plrid string, score int32) int32 {
 	id := self.genTableId()

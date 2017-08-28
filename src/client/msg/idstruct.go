@@ -23,7 +23,7 @@ var MsgCreators = map[uint32]func() Message{
         return &C_TableEnter{}
     },
     4003: func() Message {
-        return &GS_TableEnter{}
+        return &GS_TableEnter_R{}
     },
     4004: func() Message {
         return &GS_TableInfoNotify{}
@@ -44,13 +44,13 @@ var MsgCreators = map[uint32]func() Message{
         return &C_TableStandUp{}
     },
     4011: func() Message {
-        return &GS_TableStandUp{}
+        return &GS_TableStandUp_R{}
     },
     4012: func() Message {
         return &C_TableDice{}
     },
     4013: func() Message {
-        return &GS_TableDice{}
+        return &GS_TableDice_R{}
     },
     100: func() Message {
         return &C_Test{}
@@ -88,7 +88,7 @@ func (self *C_TableEnter) MsgId() uint32 {
     return 4002
 }
 
-func (self *GS_TableEnter) MsgId() uint32 {
+func (self *GS_TableEnter_R) MsgId() uint32 {
     return 4003
 }
 
@@ -116,7 +116,7 @@ func (self *C_TableStandUp) MsgId() uint32 {
     return 4010
 }
 
-func (self *GS_TableStandUp) MsgId() uint32 {
+func (self *GS_TableStandUp_R) MsgId() uint32 {
     return 4011
 }
 
@@ -124,7 +124,7 @@ func (self *C_TableDice) MsgId() uint32 {
     return 4012
 }
 
-func (self *GS_TableDice) MsgId() uint32 {
+func (self *GS_TableDice_R) MsgId() uint32 {
     return 4013
 }
 

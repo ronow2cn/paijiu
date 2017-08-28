@@ -42,7 +42,7 @@ type C_TableEnter struct { // msgid: 4002
 	Id int32
 }
 
-type GS_TableEnter struct { // msgid: 4003
+type GS_TableEnter_R struct { // msgid: 4003
 	ErrorCode int
 	TableData *TableData `msgpack:",omitempty"`
 }
@@ -71,7 +71,7 @@ type C_TableStandUp struct { // msgid: 4010
 	Id int32
 }
 
-type GS_TableStandUp struct { // msgid: 4011
+type GS_TableStandUp_R struct { // msgid: 4011
 	ErrorCode int
 }
 
@@ -79,6 +79,6 @@ type C_TableDice struct { // msgid: 4012
 	Id int32
 }
 
-type GS_TableDice struct { //msgid: 4013
+type GS_TableDice_R struct { //msgid: 4013
 	ErrorCode int
 }
