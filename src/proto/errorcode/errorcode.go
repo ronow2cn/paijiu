@@ -17,14 +17,15 @@ const (
 	// 牌桌 [100, 200)
 	// --------------------------------
 
-	Table_Full        = 100
-	Table_IsBanker    = 101
-	Table_ErrorPos    = 102
-	Table_PosOccupy   = 103
-	Table_NotExist    = 104
-	Table_IsNotBanker = 105
-	Table_NotInTable  = 106
-	Table_IdIsOver    = 107
-	Table_PosPlrError = 108
-	Table_ScoreError  = 109
+	Table_Full           = 100
+	Table_IsBanker       = 101
+	Table_ErrorPos       = 102
+	Table_PosOccupy      = 103
+	Table_NotExist       = 104
+	Table_IsNotBanker    = 105
+	Table_NotInTable     = 106
+	Table_IdIsOver       = 107
+	Table_PosPlrError    = 108
+	Table_ScoreError     = 109
+	Table_IsInOtherTable = 110
 )

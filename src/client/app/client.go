@@ -121,8 +121,25 @@ func (self *Client) ClientReqs() {
 
 		case "test":
 			self.TestReq(10)
+
 		case "create":
 			self.CreateTable()
+
+		case "enter":
+			self.EnterTable()
+
+		case "leave":
+			self.LeaveTable()
+
+		case "dice":
+			self.DiceTable()
+
+		case "seat":
+			self.SeatTable()
+
+		case "stand":
+			self.StandTable()
+
 		case "exit":
 			log.Info("Exit Cmd!")
 			return
@@ -141,6 +158,28 @@ func (self *Client) TestReq(Val int32) {
 	})
 }
 
+var Id, Pos, Score int32 = 479071, 2, 20
+
 func (self *Client) CreateTable() {
-	self.SendMsg(&msg.C_TableCreate{Score: 20})
+	self.SendMsg(&msg.C_TableCreate{Score: Score})
+}
+
+func (self *Client) EnterTable() {
+	self.SendMsg(&msg.C_TableEnter{Id: Id})
+}
+
+func (self *Client) LeaveTable() {
+	self.SendMsg(&msg.C_TableLeave{Id: Id})
+}
+
+func (self *Client) SeatTable() {
+	self.SendMsg(&msg.C_TableSeatDown{Id: Id, Pos: Pos})
+}
+
+func (self *Client) StandTable() {
+	self.SendMsg(&msg.C_TableStandUp{Id: Id, Pos: Pos})
+}
+
+func (self *Client) DiceTable() {
+	self.SendMsg(&msg.C_TableDice{Id: Id})
 }

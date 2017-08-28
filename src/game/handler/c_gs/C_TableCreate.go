@@ -18,12 +18,21 @@ func C_TableCreate(message msg.Message, ctx interface{}) {
 			return Err.Table_ScoreError
 		}
 
+		check := room.Room.CheckPlrTableId(plr.GetPlrTable().GetTableId(), plr.GetPlrTable().GetTCreateTime())
+		if check != 0 {
+			return Err.Table_IsInOtherTable
+		}
+
 		id = room.Room.CreateTable(plr.GetId(), req.Score)
 
 		return Err.OK
 	}()
 
 	plr.SendMsg(res)
+
+	if res.ErrorCode != Err.OK {
+		return
+	}
 
 	table := room.Room.GetTableById(id)
 	if table == nil {

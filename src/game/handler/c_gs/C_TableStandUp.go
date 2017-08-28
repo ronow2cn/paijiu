@@ -23,6 +23,10 @@ func C_TableStandUp(message msg.Message, ctx interface{}) {
 
 	plr.SendMsg(res)
 
+	if res.ErrorCode != Err.OK {
+		return
+	}
+
 	table := room.Room.GetTableById(req.Id)
 	if table == nil {
 		return

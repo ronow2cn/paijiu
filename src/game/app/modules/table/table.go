@@ -205,7 +205,7 @@ func (self *Table) Enter(plrid string) int {
 
 func (self *Table) Leave(plrid string) int {
 	_, ok := self.Plrs[plrid]
-	if ok {
+	if !ok {
 		return Err.Table_NotInTable
 	}
 
@@ -217,6 +217,11 @@ func (self *Table) Leave(plrid string) int {
 
 	if self.Plrs[plrid].Score == 0 {
 		delete(self.Plrs, plrid)
+	}
+
+	plr := app.PlayerMgr.LoadPlayer(plrid)
+	if plr != nil {
+		plr.GetPlrTable().Set(0, time.Now())
 	}
 
 	return Err.OK

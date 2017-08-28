@@ -58,6 +58,16 @@ func (self *room) GetTableById(id int32) *table.Table {
 	return table
 }
 
+func (self *room) CheckPlrTableId(id int32, ts time.Time) int32 {
+	t, ok := self.Table[id]
+	if ok {
+		if ts.Equal(t.CreateTs) {
+			return id
+		}
+	}
+	return 0
+}
+
 // ============================================================================
 
 //开桌人的id，开房总分

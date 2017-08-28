@@ -14,6 +14,11 @@ func C_TableEnter(message msg.Message, ctx interface{}) {
 	res := &msg.GS_TableEnter_R{}
 
 	res.ErrorCode = func() int {
+		check := room.Room.CheckPlrTableId(plr.GetPlrTable().GetTableId(), plr.GetPlrTable().GetTCreateTime())
+		if check != 0 && check != req.Id {
+			return Err.Table_IsInOtherTable
+		}
+
 		er := room.Room.EnterTable(plr.GetId(), req.Id)
 		if er != Err.OK {
 			return er
@@ -23,6 +28,10 @@ func C_TableEnter(message msg.Message, ctx interface{}) {
 	}()
 
 	plr.SendMsg(res)
+
+	if res.ErrorCode != Err.OK {
+		return
+	}
 
 	table := room.Room.GetTableById(req.Id)
 	if table == nil {
