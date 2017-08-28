@@ -25,4 +25,5 @@ const (
 	Table_IsNotBanker = 105
 	Table_NotInTable  = 106
 	Table_IdIsOver    = 107
+	Table_PosPlrError = 108
 )

@@ -24,11 +24,8 @@ const (
 type playerinfo struct {
 	Name  string
 	Head  string
-	Pos   int32 //位置
 	Score int32 //当前拥有筹码
 }
-
-type chips map[int32]*Chip //[位置]位置上筹码
 
 type Chip struct {
 	Bets map[string]int32 `bson:"num"` //[玩家]玩家下注数量
@@ -38,10 +35,13 @@ type Play struct {
 	Chips chips `bson:"chips"` //下注情况
 }
 
+type chips map[int32]*Chip //[位置]位置上筹码
+type pos map[int32]string  //[位置]位置上玩家
+
 type Table struct {
 	Id        int32                  `bson:"id"`
 	Plrs      map[string]*playerinfo `bson:"plrs"`
-	Banker    string                 `bson:"banker"`
+	Pos       pos                    `bson:"Pos"`
 	PlayIdx   int32                  `bson:"play_idx"`
 	DiceNum   int32                  `bson:"dice_num"`
 	CurPlay   *Play                  `bson:"cur_play"`
@@ -85,6 +85,40 @@ func (self *chips) SetBSON(raw bson.Raw) error {
 	return nil
 }
 
+func (self pos) GetBSON() (interface{}, error) {
+	type pos_t struct {
+		Id    int32
+		PlrId string
+	}
+	var arr []*pos_t
+
+	for id, val := range self {
+		arr = append(arr, &pos_t{id, val})
+	}
+
+	return arr, nil
+}
+
+func (self *pos) SetBSON(raw bson.Raw) error {
+	type pos_t struct {
+		Id    int32
+		PlrId string
+	}
+	var arr []*pos_t
+
+	err := raw.Unmarshal(&arr)
+	if err != nil {
+		return err
+	}
+
+	*self = make(pos)
+	for _, v := range arr {
+		(*self)[v.Id] = v.PlrId
+	}
+
+	return nil
+}
+
 // ============================================================================
 
 func NewTable() *Table {
@@ -96,40 +130,38 @@ func NewTable() *Table {
 	}
 }
 
-func (self *Table) Init(id int32, plrid string, score int32) {
+func (self *Table) Init(id int32, plrid string, score int32) int {
 	self.Id = id
-	self.Banker = plrid
+
+	plr := app.PlayerMgr.LoadPlayer(plrid)
+	if plr == nil {
+		log.Error("player not found")
+		return Err.Failed
+	}
+
+	self.Pos[gconst.TablePosBanker] = plrid
 
 	self.Plrs[plrid] = &playerinfo{
-		Pos:   gconst.TablePosBanker,
+		Name:  plr.GetName(),
+		Head:  plr.GetHead(),
 		Score: score,
 	}
+
+	return Err.OK
 }
 
 // ============================================================================
 
-func (self *Table) checkPos(pos int32) bool {
-	return pos == gconst.TablePosBanker || pos == gconst.TablePosPlayer1 || pos == gconst.TablePosPlayer2 ||
-		pos == gconst.TablePosPlayer3 || pos == gconst.TablePosPlayerWatch
-
+func (self *Table) IsBanker(plrid string) bool {
+	return plrid == self.Pos[gconst.TablePosBanker]
 }
 
-func (self *Table) FindPosPlrId(pos int32) (string, int) {
-	if !self.checkPos(pos) {
-		return "", Err.Table_ErrorPos
-	}
-
-	for id, v := range self.Plrs {
-		if v.Pos == pos {
-			return id, Err.OK
+func (self *Table) DelPos(plrid string) {
+	for k, v := range self.Pos {
+		if v == plrid {
+			delete(self.Pos, k)
 		}
 	}
-
-	return "", Err.OK
-}
-
-func (self *Table) IsBanker(plrid string) bool {
-	return plrid == self.Banker
 }
 
 // ============================================================================
@@ -156,7 +188,6 @@ func (self *Table) Enter(plrid string) int {
 		plr.GetPlrTable().Set(self.Id, self.CreatetTs)
 
 		self.Plrs[plrid] = &playerinfo{
-			Pos:   gconst.TablePosPlayerWatch,
 			Score: 0,
 			Name:  plr.GetName(),
 			Head:  plr.GetHead(),
@@ -176,7 +207,7 @@ func (self *Table) Leave(plrid string) int {
 		return Err.Table_IsBanker
 	}
 
-	self.Plrs[plrid].Pos = gconst.TablePosPlayerWatch
+	self.DelPos(plrid)
 
 	if self.Plrs[plrid].Score == 0 {
 		delete(self.Plrs, plrid)
@@ -185,45 +216,46 @@ func (self *Table) Leave(plrid string) int {
 	return Err.OK
 }
 
-func (self *Table) StandUp(plrid string) int {
-	if self.Banker == plrid {
+func (self *Table) StandUp(plrid string, pos int32) int {
+	if self.IsBanker(plrid) {
 		return Err.Table_IsBanker
 	}
 
-	_, ok := self.Plrs[plrid]
-	if ok {
-		self.Plrs[plrid].Pos = gconst.TablePosPlayerWatch
+	_, ok := self.Pos[pos]
+	if !ok {
+		return Err.Table_ErrorPos
 	}
+
+	if self.Pos[pos] != plrid {
+		return Err.Table_PosPlrError
+	}
+
+	self.DelPos(plrid)
 
 	return Err.OK
 }
 
 func (self *Table) SeatDown(plrid string, pos int32) int {
-	if self.Banker == plrid {
+	if self.IsBanker(plrid) {
 		return Err.Table_IsBanker
 	}
 
-	id, err := self.FindPosPlrId(pos)
-	if err != Err.OK {
-		return err
-	}
-
-	if id == "" {
-		_, ok := self.Plrs[plrid]
-		if ok {
-			self.Plrs[plrid].Pos = pos
-		}
-	} else {
+	_, ok := self.Pos[pos]
+	if ok {
 		return Err.Table_PosOccupy
 	}
+
+	self.Pos[pos] = plrid
 
 	return Err.OK
 }
 
 func (self *Table) Dice() int32 {
-	return RANDTABLEDICE.Int31n(6) + RANDTABLEDICE.Int31n(6) + 2
+	self.DiceNum = RANDTABLEDICE.Int31n(6) + RANDTABLEDICE.Int31n(6) + 2
+	return self.DiceNum
 }
 
+//广播消息
 func (self *Table) BroadcastMsg(message msg.Message) {
 	for id, _ := range self.Plrs {
 		plr := app.PlayerMgr.LoadPlayer(id)

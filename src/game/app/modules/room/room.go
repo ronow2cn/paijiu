@@ -124,13 +124,13 @@ func (self *room) SeatDownTable(plrid string, id int32, pos int32) int {
 }
 
 //站起来
-func (self *room) StandUpTable(plrid string, id int32) int {
+func (self *room) StandUpTable(plrid string, id int32, pos int32) int {
 	table, ok := self.Table[id]
 	if !ok {
 		return Err.Table_NotExist
 	}
 
-	er := table.StandUp(plrid)
+	er := table.StandUp(plrid, pos)
 	if er != Err.OK {
 		return er
 	}
