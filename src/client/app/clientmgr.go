@@ -16,6 +16,7 @@ var ClientMgr = &clientmgrT{
 }
 
 var ClientNum int = 1
+var Uid string = "u1-1000"
 
 // ============================================================================
 
@@ -28,9 +29,10 @@ type clientmgrT struct {
 
 // ============================================================================
 
-func (self *clientmgrT) Start(cnt int) {
+func (self *clientmgrT) Start(cnt int, uid string) {
 	addr := fmt.Sprintf("%s:%d", config.DefaultGate.IPWan, config.DefaultGate.Port)
 	ClientNum = cnt
+	Uid = uid
 
 	for i := 0; i < cnt; i++ {
 		i := i
@@ -118,7 +120,7 @@ func (self *clientmgrT) addClient(client *Client) {
 	self.locker.Unlock()
 
 	// client event: connected
-	client.OnConnected()
+	client.OnConnected(Uid)
 
 }
 

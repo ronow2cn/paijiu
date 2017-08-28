@@ -19,7 +19,12 @@ func GW_UserOnline(message msg.Message, ctx interface{}) {
 			user.Channel = req.Channel
 			user.ChannelUid = req.ChannelUid
 			user.Name, user.Head = dbmgr.CenterGetUserNameHead(req.Channel, req.ChannelUid)
-
+			if user.Name == "" {
+				user.Name = user.ChannelUid
+			}
+			if user.Head == "" {
+				user.Head = "head igame"
+			}
 		})
 		if plr == nil {
 			app.NetMgr.Send2Player(req.Sid, &msg.GS_LoginError{ErrorCode: Err.Login_UserInfo})

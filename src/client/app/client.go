@@ -7,6 +7,7 @@ import (
 	"comm/packet"
 	"comm/sched/loop"
 	"comm/tcp"
+	"fmt"
 	"proto/macrocode"
 	"sync/atomic"
 )
@@ -79,19 +80,67 @@ func (self *Client) Dispatch(p packet.Packet) {
 
 // ============================================================================
 
-func (self *Client) OnConnected() {
+func (self *Client) OnConnected(uid string) {
 	log.Info("client connected:", self.Id)
 
 	//connect gate and send msg to gate
 	self.SendMsg(&msg.C_Login{
 		AuthChannel: macrocode.ChannelType_Test,
 		AuthType:    macrocode.LoginType_WeiXinCode,
-		AuthId:      "u1-100",
+		AuthId:      uid,
 		VerMajor:    config.Common.VerMajor,
 		VerMinor:    config.Common.VerMinor,
 		VerBuild:    config.Common.VerBuild,
 	})
 }
+
 func (self *Client) OnDisconnected() {
 	log.Info("client disconnected:", self.Id)
+}
+
+// ============================================================================
+
+func (self *Client) OnUserInfo() {
+	if ClientNum == 1 {
+		go self.ClientReqs() //只有一个玩家，且玩家获取数据成功时才生效；命令行每次输入单条req，可多次输入, 输入exit为退出
+	}
+}
+
+func (self *Client) ClientReqs() {
+
+	for {
+		ReqStr := ""
+		_, err1 := fmt.Scanln(&ReqStr)
+		if nil != err1 {
+			log.Error("Error Req Cmd:", ReqStr)
+			continue
+		}
+
+		log.Info("You InPut Req Name Is:", ReqStr)
+		switch ReqStr {
+
+		case "test":
+			self.TestReq(10)
+		case "create":
+			self.CreateTable()
+		case "exit":
+			log.Info("Exit Cmd!")
+			return
+
+		default:
+			log.Error("Error Req Cmd:", ReqStr)
+		}
+	}
+}
+
+// ============================================================================
+
+func (self *Client) TestReq(Val int32) {
+	self.SendMsg(&msg.C_Test{
+		Value: Val,
+	})
+}
+
+func (self *Client) CreateTable() {
+	self.SendMsg(&msg.C_TableCreate{Score: 20})
 }

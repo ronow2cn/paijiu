@@ -68,7 +68,7 @@ func (self *room) CreateTable(plrid string, score int32) int32 {
 	}
 
 	self.Table[id] = table.NewTable()
-	self.Table[id].Init(id, plrid, score)
+	self.Table[id].InitNewTable(id, plrid, score)
 
 	return id
 }

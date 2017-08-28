@@ -26,10 +26,12 @@ func main() {
 	})
 	// start
 	N := flag.Int("n", 1, "client count")
+	Uid := flag.String("uid", "u1-1000", "client account")
+
 	flag.Parse()
 
 	handler.Init()
-	app.ClientMgr.Start(*N)
+	app.ClientMgr.Start(*N, *Uid)
 
 	loop.Run()
 

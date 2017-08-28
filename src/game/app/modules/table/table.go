@@ -126,11 +126,13 @@ func NewTable() *Table {
 		Id:       0,
 		Plrs:     make(map[string]*playerInfo),
 		CreateTs: time.Now(),
+		Pos:      make(pos),
 		PlayIdx:  1,
+		DiceNum:  1,
 	}
 }
 
-func (self *Table) Init(id int32, plrid string, score int32) int {
+func (self *Table) InitNewTable(id int32, plrid string, score int32) int {
 	self.Id = id
 
 	plr := app.PlayerMgr.LoadPlayer(plrid)
@@ -145,6 +147,10 @@ func (self *Table) Init(id int32, plrid string, score int32) int {
 		Name:  plr.GetName(),
 		Head:  plr.GetHead(),
 		Score: score,
+	}
+
+	self.CurPlay = &Play{
+		Chips: make(chips),
 	}
 
 	return Err.OK

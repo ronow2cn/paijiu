@@ -1,10 +1,10 @@
 package c_gs
 
 import (
-    "client/msg"
+	"client/msg"
 )
 
 func GS_TableInfoNotify(message msg.Message, ctx interface{}) {
-    req := message.(*msg.GS_TableInfoNotify)
-    req = req
+	req := message.(*msg.GS_TableInfoNotify)
+	PrintTableData(req.TableData)
 }
