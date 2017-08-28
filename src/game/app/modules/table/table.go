@@ -41,7 +41,7 @@ type pos map[int32]string  //[位置]位置上玩家
 type Table struct {
 	Id       int32                  `bson:"id"`
 	Plrs     map[string]*playerInfo `bson:"plrs"`
-	Pos      pos                    `bson:"Pos"`
+	Pos      pos                    `bson:"pos"`
 	PlayIdx  int32                  `bson:"play_idx"`
 	DiceNum  int32                  `bson:"dice_num"`
 	CurPlay  *Play                  `bson:"cur_play"`
@@ -308,4 +308,11 @@ func (self *Table) ToMsg() *msg.TableData {
 	}
 
 	return ret
+}
+
+func (self *Table) NotifyTableInfoToAll() {
+	res := &msg.GS_TableInfoNotify{}
+
+	res.TableData = self.ToMsg()
+	self.BroadcastMsg(res)
 }

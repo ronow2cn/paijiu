@@ -13,6 +13,45 @@ var MsgCreators = map[uint32]func() Message{
     3001: func() Message {
         return &GS_UserInfo{}
     },
+    4000: func() Message {
+        return &C_TableCreate{}
+    },
+    4001: func() Message {
+        return &GS_TableCreate_R{}
+    },
+    4002: func() Message {
+        return &C_TableEnter{}
+    },
+    4003: func() Message {
+        return &GS_TableEnter{}
+    },
+    4004: func() Message {
+        return &GS_TableInfoNotify{}
+    },
+    4006: func() Message {
+        return &C_TableLeave{}
+    },
+    4007: func() Message {
+        return &GS_TableLeave_R{}
+    },
+    4008: func() Message {
+        return &C_TableSeatDown{}
+    },
+    4009: func() Message {
+        return &GS_TableSeatDown_R{}
+    },
+    4010: func() Message {
+        return &C_TableStandUp{}
+    },
+    4011: func() Message {
+        return &GS_TableStandUp{}
+    },
+    4012: func() Message {
+        return &C_TableDice{}
+    },
+    4013: func() Message {
+        return &GS_TableDice{}
+    },
     100: func() Message {
         return &C_Test{}
     },
@@ -35,6 +74,58 @@ func (self *GS_LoginError) MsgId() uint32 {
 
 func (self *GS_UserInfo) MsgId() uint32 {
     return 3001
+}
+
+func (self *C_TableCreate) MsgId() uint32 {
+    return 4000
+}
+
+func (self *GS_TableCreate_R) MsgId() uint32 {
+    return 4001
+}
+
+func (self *C_TableEnter) MsgId() uint32 {
+    return 4002
+}
+
+func (self *GS_TableEnter) MsgId() uint32 {
+    return 4003
+}
+
+func (self *GS_TableInfoNotify) MsgId() uint32 {
+    return 4004
+}
+
+func (self *C_TableLeave) MsgId() uint32 {
+    return 4006
+}
+
+func (self *GS_TableLeave_R) MsgId() uint32 {
+    return 4007
+}
+
+func (self *C_TableSeatDown) MsgId() uint32 {
+    return 4008
+}
+
+func (self *GS_TableSeatDown_R) MsgId() uint32 {
+    return 4009
+}
+
+func (self *C_TableStandUp) MsgId() uint32 {
+    return 4010
+}
+
+func (self *GS_TableStandUp) MsgId() uint32 {
+    return 4011
+}
+
+func (self *C_TableDice) MsgId() uint32 {
+    return 4012
+}
+
+func (self *GS_TableDice) MsgId() uint32 {
+    return 4013
 }
 
 func (self *C_Test) MsgId() uint32 {
