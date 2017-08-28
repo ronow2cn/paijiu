@@ -35,7 +35,6 @@ type C_TableCreate struct { // msgid: 4000
 
 type GS_TableCreate_R struct { // msgid:4001
 	ErrorCode int
-	TableData *TableData `msgpack:",omitempty"`
 }
 
 type C_TableEnter struct { // msgid: 4002
@@ -44,7 +43,6 @@ type C_TableEnter struct { // msgid: 4002
 
 type GS_TableEnter_R struct { // msgid: 4003
 	ErrorCode int
-	TableData *TableData `msgpack:",omitempty"`
 }
 
 type GS_TableInfoNotify struct { // msgid: 4004

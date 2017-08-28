@@ -24,7 +24,7 @@ func C_TableCreate(message msg.Message, ctx interface{}) {
 			return Err.Table_NotExist
 		}
 
-		res.TableData = table.ToMsg()
+		table.NotifyTableInfoToAll()
 
 		return Err.OK
 	}()
