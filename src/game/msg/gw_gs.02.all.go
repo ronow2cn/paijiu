@@ -17,6 +17,7 @@ type GW_UserOnline struct { // msgid: 2002
 	ChannelUid string
 	Sid        uint64
 	UserId     string
+	Svr0       string
 	LoginIP    string
 }
 
