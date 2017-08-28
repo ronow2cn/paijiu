@@ -58,7 +58,8 @@ type GS_TableLeave_R struct { // msgid: 4007
 }
 
 type C_TableSeatDown struct { // msgid: 4008
-	Id int32
+	Id  int32
+	Pos int32
 }
 
 type GS_TableSeatDown_R struct { // msgid:4009
@@ -66,7 +67,8 @@ type GS_TableSeatDown_R struct { // msgid:4009
 }
 
 type C_TableStandUp struct { // msgid: 4010
-	Id int32
+	Id  int32
+	Pos int32
 }
 
 type GS_TableStandUp_R struct { // msgid: 4011
@@ -79,4 +81,5 @@ type C_TableDice struct { // msgid: 4012
 
 type GS_TableDice_R struct { //msgid: 4013
 	ErrorCode int
+	DiceNum   int32
 }

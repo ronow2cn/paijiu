@@ -19,15 +19,15 @@ func C_TableLeave(message msg.Message, ctx interface{}) {
 			return er
 		}
 
-		table := room.Room.GetTableById(req.Id)
-		if table == nil {
-			return Err.Table_NotExist
-		}
-
-		table.NotifyTableInfoToAll()
-
 		return Err.OK
 	}()
 
 	plr.SendMsg(res)
+
+	table := room.Room.GetTableById(req.Id)
+	if table == nil {
+		return
+	}
+
+	table.NotifyTableInfoToAll()
 }
