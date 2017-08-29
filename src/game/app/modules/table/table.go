@@ -27,16 +27,7 @@ type playerInfo struct {
 	Score int32 //当前拥有筹码
 }
 
-type Chip struct {
-	Bets map[string]int32 `bson:"num"` //[玩家]玩家下注数量
-}
-
-type Play struct {
-	Chips chips `bson:"chips"` //下注情况
-}
-
-type chips map[int32]*Chip //[位置]位置上筹码
-type pos map[int32]string  //[位置]位置上玩家
+type pos map[int32]string //[位置]位置上玩家
 
 type Table struct {
 	Id       int32                  `bson:"id"`
@@ -49,42 +40,6 @@ type Table struct {
 }
 
 // ============================================================================
-// marshalling
-
-func (self chips) GetBSON() (interface{}, error) {
-	type chip_t struct {
-		Id  int32
-		Pos *Chip
-	}
-	var arr []*chip_t
-
-	for id, val := range self {
-		arr = append(arr, &chip_t{id, val})
-	}
-
-	return arr, nil
-}
-
-func (self *chips) SetBSON(raw bson.Raw) error {
-	type chip_t struct {
-		Id  int32
-		Pos *Chip
-	}
-	var arr []*chip_t
-
-	err := raw.Unmarshal(&arr)
-	if err != nil {
-		return err
-	}
-
-	*self = make(chips)
-	for _, v := range arr {
-		(*self)[v.Id] = v.Pos
-	}
-
-	return nil
-}
-
 func (self pos) GetBSON() (interface{}, error) {
 	type pos_t struct {
 		Id    int32
@@ -129,6 +84,7 @@ func NewTable() *Table {
 		Pos:      make(pos),
 		PlayIdx:  1,
 		DiceNum:  1,
+		CurPlay:  NewPlay(),
 	}
 }
 
@@ -147,10 +103,6 @@ func (self *Table) InitNewTable(id int32, plrid string, score int32) int {
 		Name:  plr.GetName(),
 		Head:  plr.GetHead(),
 		Score: score,
-	}
-
-	self.CurPlay = &Play{
-		Chips: make(chips),
 	}
 
 	plr.GetPlrTable().Set(self.Id, self.CreateTs)
