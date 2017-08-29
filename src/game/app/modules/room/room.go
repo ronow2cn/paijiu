@@ -2,6 +2,7 @@ package room
 
 import (
 	"game/app/modules/table"
+	"game/msg"
 	"math/rand"
 	"proto/errorcode"
 	"time"
@@ -46,6 +47,7 @@ func (self *room) genTableId() int32 {
 			return int32(i)
 		}
 	}
+
 	return 0
 }
 
@@ -58,6 +60,7 @@ func (self *room) GetTableById(id int32) *table.Table {
 	return table
 }
 
+//检查玩家身上的tableid 对应的桌子是否还在
 func (self *room) CheckPlrTableId(id int32, ts time.Time) int32 {
 	t, ok := self.Table[id]
 	if ok {
@@ -65,11 +68,11 @@ func (self *room) CheckPlrTableId(id int32, ts time.Time) int32 {
 			return id
 		}
 	}
+
 	return 0
 }
 
 // ============================================================================
-
 //开桌人的id，开房总分
 func (self *room) CreateTable(plrid string, score int32) int32 {
 	id := self.genTableId()
@@ -93,6 +96,13 @@ func (self *room) DisMissTable(plrid string, id int32) int {
 	if !table.IsBanker(plrid) {
 		return Err.Table_IsNotBanker
 	}
+
+	table.SetPlrsTableId(0, time.Now())
+
+	table.BroadcastMsg(&msg.GS_TableDisMiss_R{
+		ErrorCode: Err.OK,
+		Id:        id,
+	})
 
 	delete(self.Table, id)
 

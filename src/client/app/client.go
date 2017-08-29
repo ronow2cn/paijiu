@@ -140,6 +140,9 @@ func (self *Client) ClientReqs() {
 		case "stand":
 			self.StandTable()
 
+		case "dismiss":
+			self.DismissTable()
+
 		case "exit":
 			log.Info("Exit Cmd!")
 			return
@@ -158,7 +161,7 @@ func (self *Client) TestReq(Val int32) {
 	})
 }
 
-var Id, Pos, Score int32 = 479071, 2, 20
+var Id, Pos, Score int32 = 247526, 2, 20
 
 func (self *Client) CreateTable() {
 	self.SendMsg(&msg.C_TableCreate{Score: Score})
@@ -182,4 +185,8 @@ func (self *Client) StandTable() {
 
 func (self *Client) DiceTable() {
 	self.SendMsg(&msg.C_TableDice{Id: Id})
+}
+
+func (self *Client) DismissTable() {
+	self.SendMsg(&msg.C_TableDisMiss{Id: Id})
 }

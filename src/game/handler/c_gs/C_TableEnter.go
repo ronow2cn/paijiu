@@ -9,10 +9,9 @@ import (
 
 func C_TableEnter(message msg.Message, ctx interface{}) {
 	req := message.(*msg.C_TableEnter)
-
 	plr := ctx.(*app.Player)
-	res := &msg.GS_TableEnter_R{}
 
+	res := &msg.GS_TableEnter_R{}
 	res.ErrorCode = func() int {
 		check := room.Room.CheckPlrTableId(plr.GetPlrTable().GetTableId(), plr.GetPlrTable().GetTCreateTime())
 		if check != 0 && check != req.Id {

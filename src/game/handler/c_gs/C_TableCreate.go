@@ -18,7 +18,12 @@ func C_TableCreate(message msg.Message, ctx interface{}) {
 			return Err.Table_ScoreError
 		}
 
-		check := room.Room.CheckPlrTableId(plr.GetPlrTable().GetTableId(), plr.GetPlrTable().GetTCreateTime())
+		tableid, ts := plr.GetPlrTable().GetTableId(), plr.GetPlrTable().GetTCreateTime()
+		if tableid != 0 {
+			return Err.Table_PlayerHaveTable
+		}
+
+		check := room.Room.CheckPlrTableId(tableid, ts)
 		if check != 0 {
 			return Err.Table_IsInOtherTable
 		}

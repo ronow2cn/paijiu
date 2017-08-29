@@ -5,6 +5,7 @@ import (
 	"comm/logger"
 	"comm/sched/loop"
 	"game/app"
+	"game/app/modules/room"
 	"time"
 )
 
@@ -27,11 +28,12 @@ func Start() {
 		for {
 			time.Sleep(N * time.Second)
 
-			log.Infof("loaded: %5d, online: %5d, loopq: %6d, handle: %6d",
+			log.Infof("loaded: %5d, online: %5d, loopq: %6d, handle: %6d, table: %6d",
 				app.PlayerMgr.NumLoaded(),
 				app.PlayerMgr.NumOnline(),
 				loop.QLen(),
 				loop.NumHandled()/N,
+				len(room.Room.Table),
 			)
 		}
 	}()

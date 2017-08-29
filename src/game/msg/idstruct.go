@@ -61,6 +61,12 @@ var MsgCreators = map[uint32]func() Message{
     4013: func() Message {
         return &GS_TableDice_R{}
     },
+    4014: func() Message {
+        return &C_TableDisMiss{}
+    },
+    4015: func() Message {
+        return &GS_TableDisMiss_R{}
+    },
     100: func() Message {
         return &C_Test{}
     },
@@ -147,6 +153,14 @@ func (self *C_TableDice) MsgId() uint32 {
 
 func (self *GS_TableDice_R) MsgId() uint32 {
     return 4013
+}
+
+func (self *C_TableDisMiss) MsgId() uint32 {
+    return 4014
+}
+
+func (self *GS_TableDisMiss_R) MsgId() uint32 {
+    return 4015
 }
 
 func (self *C_Test) MsgId() uint32 {

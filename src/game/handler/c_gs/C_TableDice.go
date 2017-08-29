@@ -10,8 +10,8 @@ import (
 func C_TableDice(message msg.Message, ctx interface{}) {
 	req := message.(*msg.C_TableDice)
 	plr := ctx.(*app.Player)
-	res := &msg.GS_TableDice_R{}
 
+	res := &msg.GS_TableDice_R{}
 	res.ErrorCode = func() int {
 		n, er := room.Room.DiceTable(req.Id)
 		if er != Err.OK {

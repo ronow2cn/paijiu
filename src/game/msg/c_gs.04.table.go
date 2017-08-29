@@ -83,3 +83,12 @@ type GS_TableDice_R struct { //msgid: 4013
 	ErrorCode int
 	DiceNum   int32
 }
+
+type C_TableDisMiss struct { //msgid: 4014
+	Id int32
+}
+
+type GS_TableDisMiss_R struct { //msgid: 4015
+	ErrorCode int
+	Id        int32
+}

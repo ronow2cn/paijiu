@@ -153,6 +153,8 @@ func (self *Table) InitNewTable(id int32, plrid string, score int32) int {
 		Chips: make(chips),
 	}
 
+	plr.GetPlrTable().Set(self.Id, self.CreateTs)
+
 	return Err.OK
 }
 
@@ -167,6 +169,18 @@ func (self *Table) DelPos(plrid string) {
 		if v == plrid {
 			delete(self.Pos, k)
 		}
+	}
+}
+
+//设置桌上玩家身上的tableid
+func (self *Table) SetPlrsTableId(id int32, ts time.Time) {
+	for plrid, _ := range self.Plrs {
+		plr := app.PlayerMgr.LoadPlayer(plrid)
+		if plr == nil {
+			continue
+		}
+
+		plr.GetPlrTable().Set(id, ts)
 	}
 }
 

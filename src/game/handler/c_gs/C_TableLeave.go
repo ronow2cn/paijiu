@@ -9,10 +9,9 @@ import (
 
 func C_TableLeave(message msg.Message, ctx interface{}) {
 	req := message.(*msg.C_TableLeave)
-
 	plr := ctx.(*app.Player)
-	res := &msg.GS_TableLeave_R{}
 
+	res := &msg.GS_TableLeave_R{}
 	res.ErrorCode = func() int {
 		er := room.Room.LeaveTable(plr.GetId(), req.Id)
 		if er != Err.OK {

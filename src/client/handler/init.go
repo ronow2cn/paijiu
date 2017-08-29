@@ -17,5 +17,6 @@ func Init() {
     msg.Handler(4009, c_gs.GS_TableSeatDown_R)
     msg.Handler(4011, c_gs.GS_TableStandUp_R)
     msg.Handler(4013, c_gs.GS_TableDice_R)
+    msg.Handler(4015, c_gs.GS_TableDisMiss_R)
     msg.Handler(101, c_gs.GS_Test_R)
 }
