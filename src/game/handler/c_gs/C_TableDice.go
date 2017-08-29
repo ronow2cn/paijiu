@@ -13,7 +13,7 @@ func C_TableDice(message msg.Message, ctx interface{}) {
 
 	res := &msg.GS_TableDice_R{}
 	res.ErrorCode = func() int {
-		n, er := room.Room.DiceTable(req.Id)
+		n, er := room.Room.DiceTable(plr.GetId(), req.Id)
 		if er != Err.OK {
 			return er
 		}

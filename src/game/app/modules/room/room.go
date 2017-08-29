@@ -170,10 +170,14 @@ func (self *room) StandUpTable(plrid string, id int32, pos int32) int {
 }
 
 //掷骰子
-func (self *room) DiceTable(id int32) (int32, int) {
+func (self *room) DiceTable(plrid string, id int32) (int32, int) {
 	table, ok := self.Table[id]
 	if !ok {
 		return 0, Err.Table_NotExist
+	}
+
+	if !table.IsBanker(plrid) {
+		return 0, Err.Table_IsNotBanker
 	}
 
 	d := table.Dice()
