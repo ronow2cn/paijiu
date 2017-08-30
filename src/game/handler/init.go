@@ -20,5 +20,6 @@ func Init() {
     msg.Handler(4016, c_gs.C_TableChipIn)
     msg.Handler(4018, c_gs.C_TableBeginFight)
     msg.Handler(4020, c_gs.C_TableNextPlay)
+    msg.Handler(4022, c_gs.C_TableGetRecord)
     msg.Handler(100, c_gs.C_Test)
 }

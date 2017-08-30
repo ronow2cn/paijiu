@@ -33,4 +33,5 @@ const (
 	Table_NotCurPlay           = 113
 	Table_CurPlayIng           = 114
 	Table_PlayerNotFound       = 115
+	Table_PlayerNotInTable     = 116
 )

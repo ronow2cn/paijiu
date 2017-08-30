@@ -85,6 +85,12 @@ var MsgCreators = map[uint32]func() Message{
     4021: func() Message {
         return &GS_TableNextPlay_R{}
     },
+    4022: func() Message {
+        return &C_TableGetRecord{}
+    },
+    4023: func() Message {
+        return &GS_TableGetRecord_R{}
+    },
     100: func() Message {
         return &C_Test{}
     },
@@ -203,6 +209,14 @@ func (self *C_TableNextPlay) MsgId() uint32 {
 
 func (self *GS_TableNextPlay_R) MsgId() uint32 {
     return 4021
+}
+
+func (self *C_TableGetRecord) MsgId() uint32 {
+    return 4022
+}
+
+func (self *GS_TableGetRecord_R) MsgId() uint32 {
+    return 4023
 }
 
 func (self *C_Test) MsgId() uint32 {

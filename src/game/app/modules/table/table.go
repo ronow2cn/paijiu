@@ -29,6 +29,12 @@ type playerInfo struct {
 
 type pos map[int32]string //[位置]位置上玩家
 
+type recOne struct {
+	Id      int32
+	PosCard poscard `bson:"poscard"` //位置上的牌
+}
+type record []*recOne
+
 type Table struct {
 	Id       int32                  `bson:"id"`
 	Plrs     map[string]*playerInfo `bson:"plrs"`
@@ -37,6 +43,7 @@ type Table struct {
 	DiceNum  int32                  `bson:"dice_num"`
 	CurPlay  *Play                  `bson:"cur_play"`
 	CreateTs time.Time              `bson:"create_ts"`
+	Record   record                 `bson:"record"`
 }
 
 // ============================================================================
@@ -145,6 +152,11 @@ func (self *Table) SetPlrsTableId(id int32, ts time.Time) {
 
 		plr.GetPlrTable().Set(id, ts)
 	}
+}
+
+func (self *Table) IsInTable(plrid string) bool {
+	_, ok := self.Plrs[plrid]
+	return ok
 }
 
 // ============================================================================
@@ -293,6 +305,8 @@ func (self *Table) BeginFight(plrid string) int {
 		}
 	}
 
+	self.AddRecord()
+
 	self.PlayIdx++
 
 	return Err.OK
@@ -302,6 +316,18 @@ func (self *Table) NextPlay(plrid string) int {
 	self.CurPlay.Reset(self.PlayIdx)
 
 	return Err.OK
+}
+
+func (self *Table) AddRecord() {
+	rec := &recOne{
+		Id:      self.CurPlay.Id,
+		PosCard: self.CurPlay.PosCard,
+	}
+	self.Record = append(self.Record, rec)
+}
+
+func (self *Table) GetRecordToMsg() []*msg.RecOne {
+	return self.Record.ToMsg()
 }
 
 // ============================================================================
@@ -376,6 +402,26 @@ func (self *Table) NotifyTableInfoToAll() {
 
 	res.TableData = self.ToMsg()
 	self.BroadcastMsg(res)
+}
+
+func (self record) ToMsg() []*msg.RecOne {
+	ret := []*msg.RecOne{}
+
+	for _, v := range self {
+		poscard := map[int32][]*msg.Card{}
+		for k, vv := range v.PosCard {
+			for _, vvv := range vv {
+				poscard[k] = append(poscard[k], &msg.Card{T: vvv.T, N: vvv.N})
+			}
+		}
+
+		ret = append(ret, &msg.RecOne{
+			Id:      v.Id,
+			PosCard: poscard,
+		})
+	}
+
+	return ret
 }
 
 // ============================================================================

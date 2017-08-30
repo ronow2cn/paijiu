@@ -25,6 +25,11 @@ type CurPlay struct {
 	PosCard map[int32][]*Card
 }
 
+type RecOne struct {
+	Id      int32
+	PosCard map[int32][]*Card
+}
+
 //桌面信息
 type TableData struct {
 	Id       int32
@@ -124,4 +129,13 @@ type C_TableNextPlay struct { // msgid:4020
 
 type GS_TableNextPlay_R struct { // msgid:4021
 	ErrorCode int
+}
+
+type C_TableGetRecord struct { // msgid: 4022
+	Id int32
+}
+
+type GS_TableGetRecord_R struct { //msgid: 4023
+	ErrorCode int
+	Records   []*RecOne `msgpack:",omitempty"`
 }

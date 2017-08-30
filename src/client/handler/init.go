@@ -21,5 +21,6 @@ func Init() {
     msg.Handler(4017, c_gs.GS_TableChipIn_R)
     msg.Handler(4019, c_gs.GS_TableBeginFight_R)
     msg.Handler(4021, c_gs.GS_TableNextPlay_R)
+    msg.Handler(4023, c_gs.GS_TableGetRecord_R)
     msg.Handler(101, c_gs.GS_Test_R)
 }

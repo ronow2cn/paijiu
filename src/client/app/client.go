@@ -152,6 +152,9 @@ func (self *Client) ClientReqs() {
 		case "nextplay":
 			self.NextPlayTable()
 
+		case "record":
+			self.GetRecordTable()
+
 		case "exit":
 			log.Info("Exit Cmd!")
 			return
@@ -170,7 +173,7 @@ func (self *Client) TestReq(Val int32) {
 	})
 }
 
-var Id, Pos, Score int32 = 501809, 2, 100
+var Id, Pos, Score int32 = 551856, 2, 100
 
 func (self *Client) CreateTable() {
 	self.SendMsg(&msg.C_TableCreate{Score: Score})
@@ -210,4 +213,8 @@ func (self *Client) BeginFightTable() {
 
 func (self *Client) NextPlayTable() {
 	self.SendMsg(&msg.C_TableNextPlay{Id: Id})
+}
+
+func (self *Client) GetRecordTable() {
+	self.SendMsg(&msg.C_TableGetRecord{Id: Id})
 }

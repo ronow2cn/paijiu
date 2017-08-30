@@ -16,8 +16,8 @@ type Chip struct {
 	Bets map[string]int32 `bson:"num"` //[玩家]玩家下注数量
 }
 
-type chips map[int32]*Chip     //[位置]位置上筹码
-type poscard map[int32][]*Card //[位置]位置上筹码
+type chips map[int32]*Chip     //[位置]位置上的筹码
+type poscard map[int32][]*Card //[位置]位置上的牌
 
 type Card struct {
 	T int32 //类型
