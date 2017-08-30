@@ -35,13 +35,21 @@ func PrintTableData(m *msg.TableData) {
 		return
 	}
 
+	log.Warningf("========================curplay idx: %d===============================", m.CurPlay.Id)
 	for k, v := range m.CurPlay.Chips {
 		log.Warningf("+++++++++++ CurPlay chip: pos %d ++++++", k)
 		for kk, vv := range v.Bets {
 			log.Warningf("bets: player %s, betnum %d", kk, vv)
 		}
 		log.Warningf("++++++++++++++++++++++++++++++++++++++++")
+	}
 
+	for k, v := range m.CurPlay.PosCard {
+		log.Warningf("+++++++++++ CurPlay posCard: pos %d ++++++", k)
+		for i, vv := range v {
+			log.Warningf("card%d: %d, %d", i, vv.T, vv.N)
+		}
+		log.Warningf("++++++++++++++++++++++++++++++++++++++++")
 	}
 
 	log.Error("====================================================================")

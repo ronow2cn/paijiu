@@ -184,3 +184,60 @@ func (self *room) DiceTable(plrid string, id int32) (int32, int) {
 
 	return d, Err.OK
 }
+
+func (self *room) ChipIn(plrid string, id int32, pos int32, score int32) int {
+	table, ok := self.Table[id]
+	if !ok {
+		return Err.Table_NotExist
+	}
+
+	if !table.IsCurPlay() {
+		return Err.Table_NotCurPlay
+	}
+
+	if table.IsBanker(plrid) {
+		return Err.Table_IsBanker
+	}
+
+	if table.GetBankerScore() < score {
+		return Err.Table_BankerScoreNotEnough
+	}
+
+	er := table.ChipIn(plrid, pos, score)
+
+	return er
+}
+
+func (self *room) BeginFight(plrid string, id int32) int {
+	table, ok := self.Table[id]
+	if !ok {
+		return Err.Table_NotExist
+	}
+
+	if !table.IsCurPlay() {
+		return Err.Table_NotCurPlay
+	}
+
+	if !table.IsBanker(plrid) {
+		return Err.Table_IsNotBanker
+	}
+
+	er := table.BeginFight(plrid)
+
+	return er
+}
+
+func (self *room) NextPlay(plrid string, id int32) int {
+	table, ok := self.Table[id]
+	if !ok {
+		return Err.Table_NotExist
+	}
+
+	if table.IsCurPlay() {
+		return Err.Table_CurPlayIng
+	}
+
+	er := table.NextPlay(plrid)
+
+	return er
+}

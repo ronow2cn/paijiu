@@ -18,5 +18,8 @@ func Init() {
     msg.Handler(4011, c_gs.GS_TableStandUp_R)
     msg.Handler(4013, c_gs.GS_TableDice_R)
     msg.Handler(4015, c_gs.GS_TableDisMiss_R)
+    msg.Handler(4017, c_gs.GS_TableChipIn_R)
+    msg.Handler(4019, c_gs.GS_TableBeginFight_R)
+    msg.Handler(4021, c_gs.GS_TableNextPlay_R)
     msg.Handler(101, c_gs.GS_Test_R)
 }

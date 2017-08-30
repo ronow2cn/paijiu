@@ -143,6 +143,15 @@ func (self *Client) ClientReqs() {
 		case "dismiss":
 			self.DismissTable()
 
+		case "chipin":
+			self.ChipInTable()
+
+		case "begin":
+			self.BeginFightTable()
+
+		case "nextplay":
+			self.NextPlayTable()
+
 		case "exit":
 			log.Info("Exit Cmd!")
 			return
@@ -161,7 +170,7 @@ func (self *Client) TestReq(Val int32) {
 	})
 }
 
-var Id, Pos, Score int32 = 175037, 2, 20
+var Id, Pos, Score int32 = 501809, 2, 100
 
 func (self *Client) CreateTable() {
 	self.SendMsg(&msg.C_TableCreate{Score: Score})
@@ -189,4 +198,16 @@ func (self *Client) DiceTable() {
 
 func (self *Client) DismissTable() {
 	self.SendMsg(&msg.C_TableDisMiss{Id: Id})
+}
+
+func (self *Client) ChipInTable() {
+	self.SendMsg(&msg.C_TableChipIn{Id: Id, Pos: Pos, Score: 3})
+}
+
+func (self *Client) BeginFightTable() {
+	self.SendMsg(&msg.C_TableBeginFight{Id: Id})
+}
+
+func (self *Client) NextPlayTable() {
+	self.SendMsg(&msg.C_TableNextPlay{Id: Id})
 }

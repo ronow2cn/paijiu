@@ -26,10 +26,11 @@ type Card struct {
 
 //一场牌局
 type Play struct {
-	Chips   chips   `bson:"chips"`   //下注情况
-	Cards   []*Card `bson:"cards"`   //牌
-	PosCard poscard `bson:"poscard"` //位置上的牌
+	Id      int32   `bson:"Id"`      //牌局id
+	Cards   []*Card `bson:"cards"`   //总的牌
 	Idx     int32   `bson:"idx"`     //牌的位置
+	PosCard poscard `bson:"poscard"` //位置上的牌
+	Chips   chips   `bson:"chips"`   //下注情况
 }
 
 // ============================================================================
@@ -104,9 +105,21 @@ func (self *poscard) SetBSON(raw bson.Raw) error {
 }
 
 // ============================================================================
+func NewChip() *Chip {
+	return &Chip{
+		Bets: make(map[string]int32),
+	}
+}
+
+func (self *Chip) Reset() {
+	self.Bets = make(map[string]int32)
+}
+
+// ============================================================================
 
 func NewPlay() *Play {
 	return &Play{
+		Id:      1,
 		Chips:   make(chips),
 		Cards:   make([]*Card, 32),
 		PosCard: make(poscard),
@@ -114,15 +127,48 @@ func NewPlay() *Play {
 	}
 }
 
-func (self *Play) Init() {
+func (self *Play) Init(id int32) {
+	self.Id = id
 
+	self.Shuffle()
 }
 
-func (self *Play) Reset() {
-	self.Chips = make(chips)
+func (self *Play) CreateInit(id int32) {
+	self.Id = id
+	self.Chips[gconst.TablePosBanker] = NewChip()
+	self.Chips[gconst.TablePosPlayer1] = NewChip()
+	self.Chips[gconst.TablePosPlayer2] = NewChip()
+	self.Chips[gconst.TablePosPlayer3] = NewChip()
+
 	self.Cards = make([]*Card, 32)
 	self.PosCard = make(poscard)
 	self.Idx = 0
+
+	self.Shuffle()
+}
+
+func (self *Play) Reset(id int32) {
+	self.Id = id
+	self.Chips[gconst.TablePosBanker].Reset()
+	self.Chips[gconst.TablePosPlayer1].Reset()
+	self.Chips[gconst.TablePosPlayer2].Reset()
+	self.Chips[gconst.TablePosPlayer3].Reset()
+
+	self.Cards = make([]*Card, 32)
+	self.PosCard = make(poscard)
+	self.Idx = 0
+
+	self.Shuffle()
+}
+
+//下注
+func (self *Play) ChipIn(plrid string, pos int32, score int32) {
+	_, ok := self.Chips[pos].Bets[plrid]
+	if ok {
+		self.Chips[pos].Bets[plrid] += score
+	} else {
+		self.Chips[pos].Bets[plrid] = score
+	}
 }
 
 //洗牌
@@ -139,6 +185,7 @@ func (self *Play) Shuffle() {
 	}
 }
 
+//发牌
 func (self *Play) Deal() {
 	self.PosCard[gconst.TablePosBanker] = self.Cards[self.Idx : self.Idx+2]
 	self.PosCard[gconst.TablePosPlayer1] = self.Cards[self.Idx+2 : self.Idx+4]
@@ -152,6 +199,7 @@ func (self *Play) isDuiZi(d1, d2 *Card) bool {
 	return (d1.T == d2.T) && (d1.N == d2.N)
 }
 
+//比大小
 func (self *Play) Compere(c1, c2 []*Card) int32 {
 	if c1[0].T == macrocode.CardType_ZhiZun && c1[1].T == macrocode.CardType_ZhiZun {
 		return 1
@@ -177,6 +225,23 @@ func (self *Play) Compere(c1, c2 []*Card) int32 {
 		} else {
 
 			if (c1[0].N + c1[1].N) == (c2[0].N + c2[1].N) {
+				c1Max := c1[0].T
+				if c1Max < c1[1].T {
+					c1Max = c1[1].T
+				}
+
+				c2Max := c2[0].T
+				if c2Max < c2[1].T {
+					c2Max = c2[1].T
+				}
+
+				if c1Max > c2Max {
+					return 1
+				} else if c1Max < c2Max {
+					return 2
+				} else {
+					return 0
+				}
 
 			} else if (c1[0].N + c1[1].N) > (c2[0].N + c2[1].N) {
 				return 1
@@ -187,4 +252,17 @@ func (self *Play) Compere(c1, c2 []*Card) int32 {
 	}
 
 	return 0
+}
+
+func (self *Play) BeginFight() (resp1, resp2, resp3 int32) {
+	//洗牌
+	self.Shuffle()
+	//发牌
+	self.Deal()
+
+	resp1 = self.Compere(self.PosCard[gconst.TablePosPlayer1], self.PosCard[gconst.TablePosBanker])
+	resp2 = self.Compere(self.PosCard[gconst.TablePosPlayer2], self.PosCard[gconst.TablePosBanker])
+	resp3 = self.Compere(self.PosCard[gconst.TablePosPlayer3], self.PosCard[gconst.TablePosBanker])
+
+	return
 }

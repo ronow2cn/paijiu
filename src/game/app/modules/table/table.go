@@ -105,6 +105,8 @@ func (self *Table) InitNewTable(id int32, plrid string, score int32) int {
 		Score: score,
 	}
 
+	self.CurPlay.CreateInit(self.PlayIdx)
+
 	plr.GetPlrTable().Set(self.Id, self.CreateTs)
 
 	return Err.OK
@@ -122,6 +124,15 @@ func (self *Table) DelPos(plrid string) {
 			delete(self.Pos, k)
 		}
 	}
+}
+
+func (self *Table) GetBankerScore() int32 {
+	plrid := self.Pos[gconst.TablePosBanker]
+	return self.Plrs[plrid].Score
+}
+
+func (self *Table) IsCurPlay() bool {
+	return self.PlayIdx == self.CurPlay.Id
 }
 
 //设置桌上玩家身上的tableid
@@ -232,6 +243,67 @@ func (self *Table) Dice() int32 {
 	return self.DiceNum
 }
 
+func (self *Table) ChipIn(plrid string, pos int32, score int32) int {
+	self.CurPlay.ChipIn(plrid, pos, score)
+
+	banker, ok1 := self.Pos[gconst.TablePosBanker]
+	if !ok1 {
+		log.Warning("ChipIn Pos not found", banker, pos)
+		return Err.Table_PlayerNotFound
+	}
+
+	_, ok2 := self.Plrs[banker]
+	_, ok3 := self.Plrs[plrid]
+	if !ok2 || !ok3 {
+		log.Warning("ChipIn plrs not found", banker, pos)
+		return Err.Table_PlayerNotFound
+	}
+
+	self.Plrs[banker].Score -= score
+	self.Plrs[plrid].Score -= score
+
+	return Err.OK
+}
+
+func (self *Table) BeginFight(plrid string) int {
+	self.CurPlay.Init(self.PlayIdx)
+	res1, res2, res3 := self.CurPlay.BeginFight()
+
+	for pid, score := range self.CurPlay.Chips[gconst.TablePosPlayer1].Bets {
+		if res1 == int32(1) {
+			self.Plrs[pid].Score += (2 * score)
+		} else {
+			self.Plrs[plrid].Score += (2 * score)
+		}
+	}
+
+	for pid, score := range self.CurPlay.Chips[gconst.TablePosPlayer2].Bets {
+		if res2 == int32(1) {
+			self.Plrs[pid].Score += (2 * score)
+		} else {
+			self.Plrs[plrid].Score += (2 * score)
+		}
+	}
+
+	for pid, score := range self.CurPlay.Chips[gconst.TablePosPlayer3].Bets {
+		if res3 == int32(1) {
+			self.Plrs[pid].Score += (2 * score)
+		} else {
+			self.Plrs[plrid].Score += (2 * score)
+		}
+	}
+
+	self.PlayIdx++
+
+	return Err.OK
+}
+
+func (self *Table) NextPlay(plrid string) int {
+	self.CurPlay.Reset(self.PlayIdx)
+
+	return Err.OK
+}
+
 // ============================================================================
 //广播消息
 func (self *Table) BroadcastMsg(message msg.Message) {
@@ -250,7 +322,8 @@ func (self *Table) ToMsg() *msg.TableData {
 		Plrs: make(map[string]*msg.PlayerInfo),
 		Pos:  make(map[int32]string),
 		CurPlay: &msg.CurPlay{
-			Chips: make(map[int32]*msg.Chip),
+			Chips:   make(map[int32]*msg.Chip),
+			PosCard: make(map[int32][]*msg.Card),
 		},
 	}
 
@@ -272,6 +345,7 @@ func (self *Table) ToMsg() *msg.TableData {
 	ret.DiceNum = self.DiceNum
 	ret.CreateTs = self.CreateTs.Unix()
 
+	ret.CurPlay.Id = self.CurPlay.Id
 	for k, v := range self.CurPlay.Chips {
 		cp := &msg.Chip{
 			Bets: make(map[string]int32),
@@ -284,6 +358,16 @@ func (self *Table) ToMsg() *msg.TableData {
 		ret.CurPlay.Chips[k] = cp
 	}
 
+	for k, v := range self.CurPlay.PosCard {
+		if len(v) < 2 {
+			log.Warning("pos card miss", k)
+			continue
+		}
+
+		ret.CurPlay.PosCard[k] = append(ret.CurPlay.PosCard[k], &msg.Card{T: v[0].T, N: v[0].N})
+		ret.CurPlay.PosCard[k] = append(ret.CurPlay.PosCard[k], &msg.Card{T: v[1].T, N: v[1].N})
+	}
+
 	return ret
 }
 
@@ -293,3 +377,5 @@ func (self *Table) NotifyTableInfoToAll() {
 	res.TableData = self.ToMsg()
 	self.BroadcastMsg(res)
 }
+
+// ============================================================================

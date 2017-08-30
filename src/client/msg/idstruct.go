@@ -58,6 +58,24 @@ var MsgCreators = map[uint32]func() Message{
     4015: func() Message {
         return &GS_TableDisMiss_R{}
     },
+    4016: func() Message {
+        return &C_TableChipIn{}
+    },
+    4017: func() Message {
+        return &GS_TableChipIn_R{}
+    },
+    4018: func() Message {
+        return &C_TableBeginFight{}
+    },
+    4019: func() Message {
+        return &GS_TableBeginFight_R{}
+    },
+    4020: func() Message {
+        return &C_TableNextPlay{}
+    },
+    4021: func() Message {
+        return &GS_TableNextPlay_R{}
+    },
     100: func() Message {
         return &C_Test{}
     },
@@ -140,6 +158,30 @@ func (self *C_TableDisMiss) MsgId() uint32 {
 
 func (self *GS_TableDisMiss_R) MsgId() uint32 {
     return 4015
+}
+
+func (self *C_TableChipIn) MsgId() uint32 {
+    return 4016
+}
+
+func (self *GS_TableChipIn_R) MsgId() uint32 {
+    return 4017
+}
+
+func (self *C_TableBeginFight) MsgId() uint32 {
+    return 4018
+}
+
+func (self *GS_TableBeginFight_R) MsgId() uint32 {
+    return 4019
+}
+
+func (self *C_TableNextPlay) MsgId() uint32 {
+    return 4020
+}
+
+func (self *GS_TableNextPlay_R) MsgId() uint32 {
+    return 4021
 }
 
 func (self *C_Test) MsgId() uint32 {
