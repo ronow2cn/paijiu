@@ -173,7 +173,7 @@ func (self *Client) TestReq(Val int32) {
 	})
 }
 
-var Id, Pos, Score int32 = 338222, 2, 100
+var Id, Pos, Score int32 = 570395, 2, 100
 
 func (self *Client) CreateTable() {
 	self.SendMsg(&msg.C_TableCreate{Score: Score})

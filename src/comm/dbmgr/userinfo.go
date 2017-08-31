@@ -130,7 +130,7 @@ func CenterUpdateUserToken(channel int32, uid string, token, refrtoken string, e
 	}
 
 	err := DBCenter.Upsert(
-		CTabNameAccount,
+		CTabNameUserinfo,
 		db.M{
 			"channel":     channel,
 			"channel_uid": uid,
@@ -158,7 +158,7 @@ func CenterUpdateUserNameHead(channel int32, uid string, name, head string) {
 	}
 
 	err := DBCenter.Update(
-		CTabNameAccount,
+		CTabNameUserinfo,
 		db.M{
 			"channel":     channel,
 			"channel_uid": uid,

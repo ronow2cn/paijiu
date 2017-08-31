@@ -12,8 +12,6 @@ const (
 	CTabNameUserinfo = "userinfo"
 	CTabNameUserload = "userload"
 	CTabNameSeqid    = "seqid"
-	CTabNameNames    = "names"
-	CTabNameAccount  = "account"
 
 	// game
 	CTabNameWorlddata = "worlddata"
@@ -29,7 +27,6 @@ const (
 
 var (
 	DBCenter *db.Database
-	DBBill   *db.Database
 	DBGame   *db.Database
 	DBLog    *db.Database
 )
@@ -49,8 +46,6 @@ func GameOpen() {
 	CenterCreateUserLoad()
 	DBCenter.CreateIndex(CTabNameUserinfo, "idx_channel", []string{"channel", "channel_uid"}, true)
 	DBCenter.CreateIndex(CTabNameUserinfo, "idx_name", []string{"name"}, false)
-
-	DBCenter.CreateIndex(CTabNameNames, "uk_name", []string{"name"}, true)
 
 	// 初始化 游戏 数据库
 	if DBGame == nil {
@@ -81,7 +76,6 @@ func GameOpen() {
 
 func GameClose() {
 	DBCenter.Close()
-	DBBill.Close()
 	DBGame.Close()
 	DBLog.Close()
 
