@@ -50,7 +50,6 @@ func CenterGetUserInfo(channel int32, authid string) *UserInfo {
 		obj.BanTs = time.Unix(0, 0)
 		obj.Name = ""
 		obj.Head = ""
-		log.Info("here3", obj)
 
 		// flush to db
 		err = DBCenter.Insert(CTabNameUserinfo, &obj)
