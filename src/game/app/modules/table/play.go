@@ -22,6 +22,7 @@ type poscard map[int32][]*Card //[位置]位置上的牌
 type Card struct {
 	T int32 //类型
 	N int32 //数值
+	H int32 //花
 }
 
 //一场牌局

@@ -35,7 +35,7 @@ func PrintTableData(m *msg.TableData) {
 		return
 	}
 
-	log.Warningf("========================curplay idx: %d===============================", m.CurPlay.Id)
+	log.Warningf("========================lastplay idx: %d===============================", m.CurPlay.Id)
 	for k, v := range m.CurPlay.Chips {
 		log.Warningf("+++++++++++ CurPlay chip: pos %d ++++++", k)
 		for kk, vv := range v.Bets {
@@ -47,7 +47,7 @@ func PrintTableData(m *msg.TableData) {
 	for k, v := range m.CurPlay.PosCard {
 		log.Warningf("+++++++++++ CurPlay posCard: pos %d ++++++", k)
 		for i, vv := range v {
-			log.Warningf("card%d: %d, %d", i, vv.T, vv.N)
+			log.Warningf("card%d: %d, %d", i, vv.T, vv.N, vv.H)
 		}
 		log.Warningf("++++++++++++++++++++++++++++++++++++++++")
 	}

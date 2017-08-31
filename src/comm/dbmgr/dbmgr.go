@@ -47,8 +47,7 @@ func GameOpen() {
 
 	CenterCreateSeqId()
 	CenterCreateUserLoad()
-
-	DBCenter.CreateIndex(CTabNameUserinfo, "idx_svr", []string{"svr"}, false)
+	DBCenter.CreateIndex(CTabNameUserinfo, "idx_channel", []string{"channel", "channel_uid"}, true)
 	DBCenter.CreateIndex(CTabNameUserinfo, "idx_name", []string{"name"}, false)
 
 	DBCenter.CreateIndex(CTabNameNames, "uk_name", []string{"name"}, true)

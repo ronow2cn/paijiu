@@ -411,7 +411,7 @@ func (self record) ToMsg() []*msg.RecOne {
 		poscard := map[int32][]*msg.Card{}
 		for k, vv := range v.PosCard {
 			for _, vvv := range vv {
-				poscard[k] = append(poscard[k], &msg.Card{T: vvv.T, N: vvv.N})
+				poscard[k] = append(poscard[k], &msg.Card{T: vvv.T, N: vvv.N, H: vvv.H})
 			}
 		}
 

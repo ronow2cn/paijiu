@@ -16,6 +16,7 @@ type Chip struct {
 type Card struct {
 	T int32 //类型
 	N int32 //数值
+	H int32 //花
 }
 
 //当前牌局信息
